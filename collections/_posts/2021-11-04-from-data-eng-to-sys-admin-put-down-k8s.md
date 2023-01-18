@@ -11,7 +11,7 @@ I've been operating Kubernetes (using EKS) in a data engineering team for almost
 
 ## Organized complexity
 
-As a graduate engineer I was kind of delighted to onboard into a data team setting up K8s. K8s was sexy tech, and it provided a lot of breadth and depth to progressively master. Thirty months later though, and I must confess to some wearyness. I've learnt a hell of a lot, but still don't know enough to avoid fresh trouble, and each new thing you install into the cluster provides yet more opportunity for distributed shenanigans.
+As a graduate engineer I was kind of delighted to onboard into a data team setting up K8s. K8s was sexy tech, and it provided a lot of breadth and depth to progressively master. Thirty months later though, and I must confess to some weariness. I've learnt a hell of a lot, but still don't know enough to avoid fresh trouble, and each new thing you install into the cluster provides yet more opportunity for distributed shenanigans.
 
 ### And then there's the K8s ecosystem...
 
@@ -19,7 +19,7 @@ As a graduate engineer I was kind of delighted to onboard into a data team setti
 
 My god, the ecosystem. It is in conversations where K8s is offered in tandem with 'service mesh', HELM, and some five-odd security plugins that the whole thing becomes a parody. 
 
-I aspire to simple, and take seriously the rewards of persisting with only [a few dull, well-trodden technologies](https://mcfunley.com/choose-boring-technology), and the K8s ecosystem attacks these better angels of my nature. One thousand new fancy peices of tech are just a YAML apply away.
+I aspire to simple, and take seriously the rewards of persisting with only [a few dull, well-trodden technologies](https://mcfunley.com/choose-boring-technology), and the K8s ecosystem attacks these better angels of my nature. One thousand new fancy pieces of tech are just a YAML apply away.
 
 ### Putting your product engineers on the K8s learning curve
 
@@ -33,7 +33,7 @@ Good engineers will embrace a learning-mindset, but opportunity costs demand tha
 
 K8s is the descendent of Borg, which is a descendent of something called *Global Work Queue*, a batch job runner! Clearly not much is left of that batch job legacy, though Borg was supposely heavily influenced by GWQ. K8s is now predominantly focused on stateless application workloads such as web microservices. What we've got in K8s for batch jobs is `CronJob` and `Job`. But they're a bit janky and not something you can cleanly offer to engineers.
 
-If you're skeptical that K8s `CronJobs` would be so hard to operate and provide 'AsAService' to your fellow engineers, Lyft's [How we learned to improve Kubernetes CronJobs at Scale](https://eng.lyft.com/improving-kubernetes-cronjobs-at-scale-part-1-cf1479df98d4) provides detail showing that running Cron tasks on K8s is a whole different ballgame than the `crontab`, and even a Lambda function. Also read about [Stripe's experience building their "distributed cron job scheduling system"](https://stripe.com/blog/operating-kubernetes). In both cases the company's had highly capable infrastructure teams dedicated to building up a Cron service on K8s. This is not easy-peasy, though it may sound simple. 
+If you're skeptical that K8s `CronJobs` would be so hard to operate and provide 'AsAService' to your fellow engineers, Lyft's [How we learned to improve Kubernetes CronJobs at Scale](https://eng.lyft.com/improving-kubernetes-cronjobs-at-scale-part-1-cf1479df98d4) provides detail showing that running Cron tasks on K8s is a whole different ballgame than the `crontab`, and even a Lambda function. Also read about [Stripe's experience building their "distributed cron job scheduling system"](https://stripe.com/blog/operating-kubernetes). In both cases the companies had highly capable infrastructure teams dedicated to building up a Cron service on K8s. This is not easy-peasy, though it may sound simple. 
 
 At my company we have more or less given data engineers the `CronJob` capability 'as is' and let them have a go. Something always goes wrong, particulary if they think they need to provision a `PersistentVolume` ([scary](https://github.com/kubernetes/kubernetes/blob/master/pkg/controller/volume/persistentvolume/pv_controller.go#L61)). Here is a small subset of the sharp edges in the raw `CronJob` resource type, that I came up with in under a minute:
 
@@ -46,7 +46,7 @@ If I wanted to setup CronJobs in the future, I'd first try just a dumb as rocks 
 
 ## Batch workloads and inelastic clusters
 
-Batch workloads by nature provide super bursty load to a compute platform. K8s is not out-of-the-box optimized for this kind of load. The managed cluster services (we use EKS) have fixed control plane management costs, so you pay something for the cluster 24/7 whether you have jobs running on it or not. It's not at all simple to fracture your cluster into multiple instances types to support the occassional high-memory of GPU-accelerated job that you need to run. We have for at least 18 months eagerly followed issue #724 on the aws/containers-roadmap: ['[EKS] [request]: Managed Nodes scale to 0'](https://github.com/aws/containers-roadmap/issues/724).  Without 'scale to zero', each nodegroup must run at least one node 24/7, so your fixed costs can be in the thousands per-month depending on the instance types in you cluster. It's 2021, we can do better than this.
+Batch workloads by nature provide super bursty load to a compute platform. K8s is not out-of-the-box optimized for this kind of load. The managed cluster services (we use EKS) have fixed control plane management costs, so you pay something for the cluster 24/7 whether you have jobs running on it or not. It's not at all simple to fracture your cluster into multiple instances types to support the occasional high-memory of GPU-accelerated job that you need to run. We have for at least 18 months eagerly followed issue #724 on the aws/containers-roadmap: ['[EKS] [request]: Managed Nodes scale to 0'](https://github.com/aws/containers-roadmap/issues/724).  Without 'scale to zero', each nodegroup must run at least one node 24/7, so your fixed costs can be in the thousands per-month depending on the instance types in you cluster. It's 2021, we can do better than this.
 
 At scale the default scheduling behaviour of K8s can wreck a batch job runner's SLOs. Specialist [batch job schedulers for K8s](https://github.com/atlassian/escalator) have been built to handle burstiness that it otherwise fails to handle. 
 
@@ -84,7 +84,7 @@ I think the key features of this better future would be:
     - Data batch jobs can be mostly modelled as a transform function over some structured input data, so the batch job platform should encourage that kind of problem decomposition.
     - Idempotency should be a first-class concept, as well as dataflow.
     - Be opionated about best-practices like dry-run testing, staging areas.
-- Don't wrap the cloud system in so much YAML and cloud services minutae that a local-prod impedence mismatch destroys our tight dev loops. I should *not* need to run a mini-container orchestrator on my laptop to test my pipeline changes.
+- Don't wrap the cloud system in so much YAML and cloud services minutiae that a local-prod impedence mismatch destroys our tight dev loops. I should *not* need to run a mini-container orchestrator on my laptop to test my pipeline changes.
 
 ## Conclusion
 
